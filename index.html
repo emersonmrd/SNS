@@ -1,0 +1,1834 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SNS — Tecnologia que move negócios</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* ===== RESET & VARIÁVEIS ===== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #0d1128;
+        --purple: #7b2fff;
+        --violet: #5a1fc8;
+        --pink: #e91e8c;
+        --pink-dark: #c0158a;
+        --text: #f0eeff;
+        --muted: #8888aa;
+        --glass: rgba(123, 47, 255, 0.08);
+        --glass-b: rgba(233, 30, 140, 0.15);
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        overflow-x: hidden;
+        cursor: none;
+      }
+
+      /* ===== CURSOR CUSTOMIZADO ===== */
+      #cursor-dot {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        background: var(--pink);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 99999;
+        transform: translate(-50%, -50%);
+        transition:
+          transform 0.1s ease,
+          width 0.2s,
+          height 0.2s,
+          background 0.2s;
+      }
+      #cursor-ring {
+        position: fixed;
+        width: 34px;
+        height: 34px;
+        border: 2px solid var(--purple);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 99998;
+        transform: translate(-50%, -50%);
+        transition:
+          transform 0.18s ease,
+          width 0.2s,
+          height 0.2s,
+          border-color 0.2s;
+      }
+      body:has(a:hover) #cursor-dot,
+      body:has(button:hover) #cursor-dot {
+        width: 14px;
+        height: 14px;
+        background: var(--pink-dark);
+      }
+      body:has(a:hover) #cursor-ring,
+      body:has(button:hover) #cursor-ring {
+        width: 44px;
+        height: 44px;
+        border-color: var(--pink);
+      }
+
+      @media (pointer: coarse) {
+        #cursor-dot,
+        #cursor-ring {
+          display: none;
+        }
+        body {
+          cursor: auto;
+        }
+        * {
+          cursor: auto;
+        }
+        a,
+        button {
+          cursor: pointer;
+        }
+      }
+
+      /* ===== PARTÍCULAS ===== */
+      #particles-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      /* ===== NAVBAR ===== */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 5vw;
+        height: 68px;
+        background: rgba(13, 17, 40, 0.7);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border-bottom: 1px solid rgba(123, 47, 255, 0.2);
+        transition: background 0.3s;
+      }
+
+      .nav-logo {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 1.7rem;
+        background: linear-gradient(135deg, var(--pink), var(--purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: 2px;
+        text-decoration: none;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2.2rem;
+        list-style: none;
+      }
+
+      .nav-links a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.92rem;
+        font-weight: 500;
+        position: relative;
+        transition: color 0.3s;
+        cursor: none;
+      }
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--pink), var(--purple));
+        transition: width 0.3s ease;
+        border-radius: 2px;
+      }
+      .nav-links a:hover {
+        color: var(--text);
+      }
+      .nav-links a:hover::after {
+        width: 100%;
+      }
+
+      .nav-cta {
+        background: linear-gradient(135deg, var(--pink), var(--purple));
+        color: #fff !important;
+        padding: 0.45rem 1.3rem;
+        border-radius: 30px;
+        font-weight: 600 !important;
+        font-size: 0.88rem !important;
+        transition:
+          opacity 0.3s,
+          transform 0.2s !important;
+        cursor: none;
+      }
+      .nav-cta:hover {
+        opacity: 0.85;
+        transform: translateY(-1px);
+      }
+      .nav-cta::after {
+        display: none !important;
+      }
+
+      /* Hamburger */
+      .nav-hamburger {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        cursor: pointer;
+        padding: 6px;
+      }
+      .nav-hamburger span {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background: var(--text);
+        border-radius: 2px;
+        transition:
+          transform 0.3s,
+          opacity 0.3s;
+      }
+      .nav-hamburger.open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+      }
+      .nav-hamburger.open span:nth-child(2) {
+        opacity: 0;
+      }
+      .nav-hamburger.open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+      }
+
+      @media (max-width: 768px) {
+        .nav-hamburger {
+          display: flex;
+        }
+        .nav-links {
+          position: fixed;
+          top: 68px;
+          left: 0;
+          right: 0;
+          flex-direction: column;
+          background: rgba(13, 17, 40, 0.97);
+          padding: 1.5rem 5vw 2rem;
+          gap: 1.4rem;
+          transform: translateY(-120%);
+          transition: transform 0.4s ease;
+          border-bottom: 1px solid rgba(123, 47, 255, 0.2);
+        }
+        .nav-links.open {
+          transform: translateY(0);
+        }
+      }
+
+      /* ===== SEÇÃO BASE ===== */
+      section {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ===== HERO ===== */
+      #hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 100px 5vw 120px;
+        overflow: hidden;
+      }
+
+      .hero-bg-glow {
+        position: absolute;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: min(700px, 90vw);
+        height: min(700px, 90vw);
+        background: radial-gradient(
+          ellipse at center,
+          rgba(123, 47, 255, 0.18) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      .hero-label {
+        display: inline-block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--pink);
+        background: rgba(233, 30, 140, 0.1);
+        border: 1px solid rgba(233, 30, 140, 0.3);
+        padding: 0.35rem 1rem;
+        border-radius: 30px;
+        margin-bottom: 2rem;
+        opacity: 0;
+        animation: fadeUp 0.8s 0.3s forwards;
+      }
+
+      .hero-title {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: clamp(5rem, 18vw, 14rem);
+        line-height: 0.9;
+        letter-spacing: -0.03em;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--pink) 0%,
+          var(--purple) 60%,
+          var(--violet) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* Animação letra por letra */
+      .hero-title .char {
+        display: inline-block;
+        opacity: 0;
+        transform: translateY(40px) rotate(6deg);
+        animation: charIn 0.6s ease forwards;
+      }
+      .hero-title .char:nth-child(1) {
+        animation-delay: 0.5s;
+      }
+      .hero-title .char:nth-child(2) {
+        animation-delay: 0.7s;
+      }
+      .hero-title .char:nth-child(3) {
+        animation-delay: 0.9s;
+      }
+
+      @keyframes charIn {
+        to {
+          opacity: 1;
+          transform: translateY(0) rotate(0deg);
+        }
+      }
+
+      .hero-subtitle {
+        font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+        color: var(--muted);
+        max-width: 480px;
+        margin: 0 auto 2.5rem;
+        opacity: 0;
+        animation: fadeUp 0.8s 1.2s forwards;
+      }
+
+      .hero-cta {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+        color: #fff;
+        font-family: "DM Sans", sans-serif;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 0.9rem 2.4rem;
+        border-radius: 50px;
+        text-decoration: none;
+        cursor: none;
+        box-shadow: 0 0 24px rgba(233, 30, 140, 0.5);
+        animation:
+          fadeUp 0.8s 1.5s forwards,
+          glowPulse 2.5s 2.5s infinite;
+        opacity: 0;
+        transition:
+          transform 0.2s,
+          box-shadow 0.3s;
+      }
+      .hero-cta:hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 0 40px rgba(233, 30, 140, 0.7);
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(24px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes glowPulse {
+        0%,
+        100% {
+          box-shadow: 0 0 24px rgba(233, 30, 140, 0.5);
+        }
+        50% {
+          box-shadow: 0 0 48px rgba(233, 30, 140, 0.85);
+        }
+      }
+
+      /* Ondas SVG Hero */
+      .hero-waves {
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .hero-waves svg {
+        display: block;
+        width: 100%;
+      }
+
+      /* ===== SEPARADOR ONDAS ===== */
+      .wave-sep {
+        position: relative;
+        z-index: 1;
+        line-height: 0;
+        overflow: hidden;
+      }
+      .wave-sep svg {
+        display: block;
+        width: 100%;
+      }
+
+      /* ===== SEÇÕES GENÉRICAS ===== */
+      .section-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 100px 5vw;
+      }
+
+      .section-tag {
+        display: inline-block;
+        font-size: 0.74rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--pink);
+        margin-bottom: 1rem;
+      }
+
+      .section-title {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: clamp(2rem, 5vw, 3.4rem);
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+      }
+
+      /* ===== ANIMAÇÕES DE ENTRADA ===== */
+      .reveal {
+        opacity: 0;
+        transform: translateY(40px);
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease;
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .reveal-delay-1 {
+        transition-delay: 0.1s;
+      }
+      .reveal-delay-2 {
+        transition-delay: 0.2s;
+      }
+      .reveal-delay-3 {
+        transition-delay: 0.3s;
+      }
+      .reveal-delay-4 {
+        transition-delay: 0.4s;
+      }
+      .reveal-delay-5 {
+        transition-delay: 0.5s;
+      }
+
+      /* ===== SOBRE ===== */
+      #sobre {
+        background: rgba(13, 17, 40, 1);
+      }
+
+      .sobre-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5rem;
+        align-items: center;
+      }
+
+      .sobre-text p {
+        color: var(--muted);
+        font-size: 1.05rem;
+        line-height: 1.8;
+        margin-bottom: 1.2rem;
+      }
+
+      .sobre-numbers {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+      }
+
+      .num-card {
+        background: var(--glass);
+        border: 1px solid rgba(123, 47, 255, 0.25);
+        border-radius: 16px;
+        padding: 1.6rem 1.4rem;
+        backdrop-filter: blur(8px);
+        text-align: center;
+        transition:
+          border-color 0.3s,
+          transform 0.3s;
+      }
+      .num-card:hover {
+        border-color: var(--pink);
+        transform: translateY(-4px);
+      }
+
+      .num-value {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 2.2rem;
+        background: linear-gradient(135deg, var(--pink), var(--purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: block;
+      }
+
+      .num-label {
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+      }
+
+      @media (max-width: 768px) {
+        .sobre-grid {
+          grid-template-columns: 1fr;
+          gap: 3rem;
+        }
+        .sobre-numbers {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      /* ===== SERVIÇOS ===== */
+      #servicos {
+        background: linear-gradient(180deg, #0d1128 0%, #0e1230 100%);
+      }
+
+      .servicos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.6rem;
+        margin-top: 3rem;
+      }
+
+      .service-card {
+        background: var(--glass);
+        border: 1px solid rgba(123, 47, 255, 0.2);
+        border-radius: 20px;
+        padding: 2rem 1.8rem;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        transition:
+          border-color 0.3s,
+          transform 0.35s,
+          box-shadow 0.35s;
+        position: relative;
+        overflow: hidden;
+      }
+      .service-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(233, 30, 140, 0.06),
+          rgba(123, 47, 255, 0.06)
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .service-card:hover {
+        border-color: var(--pink);
+        transform: translateY(-6px);
+        box-shadow: 0 0 30px rgba(233, 30, 140, 0.2);
+      }
+      .service-card:hover::before {
+        opacity: 1;
+      }
+
+      .service-icon {
+        width: 52px;
+        height: 52px;
+        background: linear-gradient(
+          135deg,
+          rgba(233, 30, 140, 0.2),
+          rgba(123, 47, 255, 0.2)
+        );
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.3rem;
+      }
+      .service-icon svg {
+        width: 26px;
+        height: 26px;
+      }
+
+      .service-title {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 1.15rem;
+        margin-bottom: 0.7rem;
+      }
+
+      .service-desc {
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.7;
+        margin-bottom: 1.2rem;
+      }
+
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .badge {
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 0.28rem 0.75rem;
+        border-radius: 30px;
+        background: rgba(233, 30, 140, 0.12);
+        border: 1px solid rgba(233, 30, 140, 0.25);
+        color: var(--pink);
+        transition:
+          background 0.2s,
+          border-color 0.2s;
+      }
+      .service-card:hover .badge {
+        background: rgba(233, 30, 140, 0.2);
+        border-color: rgba(233, 30, 140, 0.5);
+      }
+
+      /* ===== PORTFÓLIO ===== */
+      #portfolio {
+        background: rgba(13, 17, 40, 1);
+      }
+
+      .portfolio-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.8rem;
+        margin-top: 3rem;
+      }
+
+      .portfolio-card {
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid rgba(123, 47, 255, 0.2);
+        background: var(--glass);
+        backdrop-filter: blur(12px);
+        transition:
+          transform 0.35s,
+          box-shadow 0.35s,
+          border-color 0.3s;
+        position: relative;
+        cursor: none;
+      }
+      .portfolio-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 40px rgba(123, 47, 255, 0.25);
+        border-color: var(--purple);
+      }
+
+      .portfolio-img {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16/9;
+        overflow: hidden;
+        background: #111830;
+      }
+      .portfolio-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.5s ease;
+      }
+      .portfolio-card:hover .portfolio-img img {
+        transform: scale(1.06);
+      }
+
+      .portfolio-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(233, 30, 140, 0.85),
+          rgba(123, 47, 255, 0.85)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .portfolio-card:hover .portfolio-overlay {
+        opacity: 1;
+      }
+
+      .overlay-icon {
+        width: 50px;
+        height: 50px;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: scale(0.7);
+        transition: transform 0.3s;
+      }
+      .portfolio-card:hover .overlay-icon {
+        transform: scale(1);
+      }
+
+      .portfolio-info {
+        padding: 1.4rem 1.5rem;
+      }
+
+      .portfolio-tag {
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--pink);
+        margin-bottom: 0.4rem;
+        display: block;
+      }
+
+      .portfolio-name {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin-bottom: 0.4rem;
+      }
+
+      .portfolio-desc {
+        color: var(--muted);
+        font-size: 0.85rem;
+        line-height: 1.6;
+        margin-bottom: 1.1rem;
+      }
+
+      .btn-access {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--purple);
+        text-decoration: none;
+        cursor: none;
+        transition:
+          color 0.2s,
+          gap 0.2s;
+      }
+      .btn-access:hover {
+        color: var(--pink);
+        gap: 0.7rem;
+      }
+      .btn-access svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      /* ===== CONTATO ===== */
+      #contato {
+        background: linear-gradient(180deg, #0d1128 0%, #0a0e22 100%);
+      }
+
+      .contato-card {
+        max-width: 680px;
+        margin: 0 auto;
+        text-align: center;
+        background: var(--glass);
+        border: 1px solid rgba(123, 47, 255, 0.25);
+        border-radius: 28px;
+        padding: 4rem 3rem;
+        backdrop-filter: blur(16px);
+      }
+
+      .contato-card .section-title {
+        margin-bottom: 1rem;
+      }
+
+      .contato-card p {
+        color: var(--muted);
+        margin-bottom: 2.5rem;
+        font-size: 1.05rem;
+      }
+
+      .btn-whatsapp {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        background: linear-gradient(135deg, var(--pink), var(--purple));
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.05rem;
+        padding: 1rem 2.6rem;
+        border-radius: 50px;
+        text-decoration: none;
+        cursor: none;
+        box-shadow: 0 0 30px rgba(233, 30, 140, 0.4);
+        transition:
+          transform 0.25s,
+          box-shadow 0.3s;
+        margin-bottom: 2.5rem;
+      }
+      .btn-whatsapp:hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 0 50px rgba(233, 30, 140, 0.65);
+      }
+
+      .contato-icons {
+        display: flex;
+        justify-content: center;
+        gap: 1.8rem;
+      }
+
+      .contato-icon-link {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 1px solid rgba(123, 47, 255, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        text-decoration: none;
+        cursor: none;
+        transition:
+          border-color 0.3s,
+          color 0.3s,
+          transform 0.2s,
+          background 0.3s;
+      }
+      .contato-icon-link:hover {
+        border-color: var(--pink);
+        color: var(--pink);
+        transform: translateY(-3px);
+        background: rgba(233, 30, 140, 0.1);
+      }
+
+      @media (max-width: 600px) {
+        .contato-card {
+          padding: 3rem 1.5rem;
+        }
+      }
+
+      /* ===== RODAPÉ ===== */
+      footer {
+        background: #080c1c;
+        border-top: 1px solid rgba(123, 47, 255, 0.15);
+        position: relative;
+        z-index: 1;
+      }
+
+      .footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 3.5rem 5vw 2rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+
+      .footer-brand .nav-logo {
+        font-size: 2rem;
+      }
+      .footer-slogan {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+      }
+
+      .footer-links-title {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 1rem;
+      }
+
+      .footer-links {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .footer-links a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+        cursor: none;
+        transition: color 0.25s;
+      }
+      .footer-links a:hover {
+        color: var(--pink);
+      }
+
+      .footer-divider {
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          var(--pink),
+          var(--purple),
+          transparent
+        );
+        margin: 2rem 5vw 1.5rem;
+        opacity: 0.5;
+      }
+
+      .footer-copy {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.82rem;
+        padding: 0 5vw 2rem;
+      }
+
+      @media (max-width: 600px) {
+        .footer-inner {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ===== UTILITÁRIOS ===== */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        ::before,
+        ::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Cursor customizado -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- Canvas de partículas -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav id="navbar">
+      <a href="#hero" class="nav-logo">SNS</a>
+      <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#sobre">Sobre</a></li>
+        <li><a href="#servicos">Serviços</a></li>
+        <li><a href="#portfolio">Portfólio</a></li>
+        <li><a href="#contato" class="nav-cta">Contato</a></li>
+      </ul>
+    </nav>
+
+    <!-- ===== HERO ===== -->
+    <section id="hero">
+      <div class="hero-bg-glow"></div>
+      <div class="hero-label">Inovação &amp; Tecnologia</div>
+      <h1 class="hero-title" aria-label="SNS">
+        <span class="char">S</span><span class="char">N</span
+        ><span class="char">S</span>
+      </h1>
+      <p class="hero-subtitle">Tecnologia que move negócios</p>
+      <a href="#servicos" class="hero-cta">Conheça nossos serviços</a>
+
+      <!-- Ondas SVG Hero -->
+      <div class="hero-waves">
+        <svg
+          viewBox="0 0 1440 160"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <linearGradient id="wg1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#e91e8c" stop-opacity=".55" />
+              <stop offset="100%" stop-color="#7b2fff" stop-opacity=".55" />
+            </linearGradient>
+            <linearGradient id="wg2" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#c0158a" stop-opacity=".35" />
+              <stop offset="100%" stop-color="#5a1fc8" stop-opacity=".35" />
+            </linearGradient>
+            <linearGradient id="wg3" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#0d1128" />
+              <stop offset="100%" stop-color="#0d1128" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M0,60 C300,120 600,0 900,80 C1200,160 1350,40 1440,70 L1440,160 L0,160 Z"
+            fill="url(#wg2)"
+          >
+            <animateTransform
+              attributeName="transform"
+              type="translate"
+              values="0,0;-40,10;0,0"
+              dur="8s"
+              repeatCount="indefinite"
+            />
+          </path>
+          <path
+            d="M0,90 C250,40 550,130 850,60 C1100,10 1300,100 1440,80 L1440,160 L0,160 Z"
+            fill="url(#wg1)"
+          >
+            <animateTransform
+              attributeName="transform"
+              type="translate"
+              values="0,0;30,-8;0,0"
+              dur="10s"
+              repeatCount="indefinite"
+            />
+          </path>
+          <path
+            d="M0,130 C200,100 500,145 800,120 C1100,95 1300,140 1440,130 L1440,160 L0,160 Z"
+            fill="url(#wg3)"
+          />
+        </svg>
+      </div>
+    </section>
+
+    <!-- ===== SOBRE ===== -->
+    <section id="sobre">
+      <div class="section-inner sobre-grid">
+        <div class="sobre-text">
+          <span class="section-tag reveal">Quem somos</span>
+          <h2 class="section-title reveal reveal-delay-1">
+            Uma empresa completa<br />de tecnologia
+          </h2>
+          <p class="reveal reveal-delay-2">
+            A <strong>SNS</strong> é uma empresa de tecnologia e inovação
+            construída para entregar resultados reais. Atuamos em todo o ciclo
+            de vida da infraestrutura digital: do projeto à operação, do código
+            à conversão.
+          </p>
+          <p class="reveal reveal-delay-3">
+            Nossa equipe multidisciplinar reúne especialistas em infraestrutura,
+            redes, desenvolvimento de software, observabilidade e marketing
+            digital — tudo sob um mesmo teto, com comprometimento total e
+            suporte ininterrupto.
+          </p>
+        </div>
+        <div class="sobre-numbers reveal reveal-delay-2">
+          <div class="num-card">
+            <span class="num-value">5+</span>
+            <span class="num-label">Áreas de atuação</span>
+          </div>
+          <div class="num-card">
+            <span class="num-value">100%</span>
+            <span class="num-label">Comprometimento</span>
+          </div>
+          <div class="num-card">
+            <span class="num-value">24/7</span>
+            <span class="num-label">Suporte contínuo</span>
+          </div>
+          <div class="num-card">
+            <span class="num-value">∞</span>
+            <span class="num-label">Escalabilidade</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Separador de onda -->
+    <div class="wave-sep">
+      <svg
+        viewBox="0 0 1440 60"
+        xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="none"
+        style="height: 60px"
+      >
+        <path
+          d="M0,30 C360,60 720,0 1080,30 C1260,45 1380,20 1440,30 L1440,60 L0,60 Z"
+          fill="rgba(123,47,255,0.12)"
+        />
+        <path
+          d="M0,40 C400,10 800,55 1200,25 C1340,15 1400,40 1440,35 L1440,60 L0,60 Z"
+          fill="rgba(233,30,140,0.08)"
+        />
+      </svg>
+    </div>
+
+    <!-- ===== SERVIÇOS ===== -->
+    <section id="servicos">
+      <div class="section-inner">
+        <span class="section-tag reveal">O que fazemos</span>
+        <h2 class="section-title reveal reveal-delay-1">Nossas soluções</h2>
+
+        <div class="servicos-grid">
+          <!-- Card 1: TI & Infraestrutura -->
+          <div class="service-card reveal reveal-delay-1">
+            <div class="service-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="url(#sg1)"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <defs>
+                  <linearGradient id="sg1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#e91e8c" />
+                    <stop offset="100%" stop-color="#7b2fff" />
+                  </linearGradient>
+                </defs>
+                <rect x="2" y="3" width="20" height="4" rx="1" />
+                <rect x="2" y="10" width="20" height="4" rx="1" />
+                <rect x="2" y="17" width="20" height="4" rx="1" />
+                <line x1="6" y1="5" x2="6.01" y2="5" />
+                <line x1="6" y1="12" x2="6.01" y2="12" />
+                <line x1="6" y1="19" x2="6.01" y2="19" />
+              </svg>
+            </div>
+            <div class="service-title">TI &amp; Infraestrutura</div>
+            <div class="service-desc">
+              Infraestrutura robusta e escalável para seu negócio crescer sem
+              limites.
+            </div>
+            <div class="badges">
+              <span class="badge">Servidores</span
+              ><span class="badge">VMware</span
+              ><span class="badge">Proxmox</span>
+              <span class="badge">Docker</span
+              ><span class="badge">Kubernetes</span
+              ><span class="badge">AWS</span> <span class="badge">Azure</span
+              ><span class="badge">GCP</span
+              ><span class="badge">Terraform</span>
+              <span class="badge">Ansible</span
+              ><span class="badge">Automação</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Monitoria -->
+          <div class="service-card reveal reveal-delay-2">
+            <div class="service-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="url(#sg2)"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <defs>
+                  <linearGradient id="sg2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#e91e8c" />
+                    <stop offset="100%" stop-color="#7b2fff" />
+                  </linearGradient>
+                </defs>
+                <circle cx="12" cy="12" r="3" />
+                <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" />
+                <polyline points="22 12 18 12 15 18 9 6 6 12 2 12" />
+              </svg>
+            </div>
+            <div class="service-title">Monitoria &amp; Observabilidade</div>
+            <div class="service-desc">
+              Visibilidade total do seu ambiente com alertas inteligentes e
+              dashboards em tempo real.
+            </div>
+            <div class="badges">
+              <span class="badge">Zabbix</span
+              ><span class="badge">Grafana</span>
+              <span class="badge">Prometheus</span
+              ><span class="badge">LibreNMS</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Desenvolvimento -->
+          <div class="service-card reveal reveal-delay-3">
+            <div class="service-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="url(#sg3)"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <defs>
+                  <linearGradient id="sg3" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#e91e8c" />
+                    <stop offset="100%" stop-color="#7b2fff" />
+                  </linearGradient>
+                </defs>
+                <polyline points="16 18 22 12 16 6" />
+                <polyline points="8 6 2 12 8 18" />
+              </svg>
+            </div>
+            <div class="service-title">Desenvolvimento</div>
+            <div class="service-desc">
+              Sistemas sob medida e sites modernos com foco em performance e
+              experiência do usuário.
+            </div>
+            <div class="badges">
+              <span class="badge">Sistemas</span><span class="badge">Web</span
+              ><span class="badge">Sites</span> <span class="badge">APIs</span
+              ><span class="badge">UI/UX</span
+              ><span class="badge">Mobile First</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Telecom -->
+          <div class="service-card reveal reveal-delay-4">
+            <div class="service-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="url(#sg4)"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <defs>
+                  <linearGradient id="sg4" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#e91e8c" />
+                    <stop offset="100%" stop-color="#7b2fff" />
+                  </linearGradient>
+                </defs>
+                <path d="M5 12.55a11 11 0 0 1 14.08 0" />
+                <path d="M1.42 9a16 16 0 0 1 21.16 0" />
+                <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+                <circle cx="12" cy="20" r="1" />
+              </svg>
+            </div>
+            <div class="service-title">Telecom &amp; Redes</div>
+            <div class="service-desc">
+              Redes como serviço: projeto, implantação e gerenciamento completo
+              de infraestrutura de conectividade.
+            </div>
+            <div class="badges">
+              <span class="badge">Roteamento</span
+              ><span class="badge">Switching</span
+              ><span class="badge">Firewall</span> <span class="badge">VPN</span
+              ><span class="badge">SD-WAN</span
+              ><span class="badge">Wi-Fi Enterprise</span>
+              <span class="badge">MPLS</span><span class="badge">BGP</span>
+            </div>
+          </div>
+
+          <!-- Card 5: Marketing Digital -->
+          <div class="service-card reveal reveal-delay-5">
+            <div class="service-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="url(#sg5)"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <defs>
+                  <linearGradient id="sg5" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#e91e8c" />
+                    <stop offset="100%" stop-color="#7b2fff" />
+                  </linearGradient>
+                </defs>
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+              </svg>
+            </div>
+            <div class="service-title">Marketing Digital</div>
+            <div class="service-desc">
+              Tráfego pago estratégico para atrair clientes reais e escalar suas
+              conversões.
+            </div>
+            <div class="badges">
+              <span class="badge">Google Ads</span
+              ><span class="badge">Meta Ads</span>
+              <span class="badge">Tráfego Pago</span
+              ><span class="badge">Campanhas</span
+              ><span class="badge">Analytics</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Separador de onda -->
+    <div class="wave-sep" style="transform: scaleX(-1)">
+      <svg
+        viewBox="0 0 1440 60"
+        xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="none"
+        style="height: 60px"
+      >
+        <path
+          d="M0,30 C360,60 720,0 1080,30 C1260,45 1380,20 1440,30 L1440,60 L0,60 Z"
+          fill="rgba(233,30,140,0.1)"
+        />
+      </svg>
+    </div>
+
+    <!-- ===== PORTFÓLIO ===== -->
+    <section id="portfolio">
+      <div class="section-inner">
+        <span class="section-tag reveal">Cases</span>
+        <h2 class="section-title reveal reveal-delay-1">
+          Projetos Desenvolvidos
+        </h2>
+
+        <div class="portfolio-grid" id="portfolio-grid">
+          <div class="portfolio-card reveal reveal-delay-1">
+            <div class="portfolio-img">
+              <img
+                src="https://api.microlink.io/?url=https://emersonmrd.github.io/app-gps-caminhao/&screenshot=true&meta=false&embed=screenshot.url"
+                alt="App GPS Caminhão"
+                loading="lazy"
+              />
+              <div class="portfolio-overlay">
+                <div class="overlay-icon">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#fff"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                    />
+                    <polyline points="15 3 21 3 21 9" />
+                    <line x1="10" y1="14" x2="21" y2="3" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="portfolio-info">
+              <span class="portfolio-tag">GPS / Maps</span>
+              <div class="portfolio-name">App GPS Caminhão</div>
+              <div class="portfolio-desc">
+                Rastreamento em tempo real de frotas com mapa interativo.
+              </div>
+              <a
+                href="https://emersonmrd.github.io/app-gps-caminhao/"
+                target="_blank"
+                rel="noopener"
+                class="btn-access"
+              >
+                Acessar
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M5 12h14" />
+                  <path d="M12 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="portfolio-card reveal reveal-delay-2">
+            <div class="portfolio-img">
+              <img
+                src="https://api.microlink.io/?url=https://projeto-agenda-coral-gamma.vercel.app/login&screenshot=true&meta=false&embed=screenshot.url"
+                alt="Agenda Digital"
+                loading="lazy"
+              />
+              <div class="portfolio-overlay">
+                <div class="overlay-icon">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#fff"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                    />
+                    <polyline points="15 3 21 3 21 9" />
+                    <line x1="10" y1="14" x2="21" y2="3" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="portfolio-info">
+              <span class="portfolio-tag">Produtividade</span>
+              <div class="portfolio-name">Agenda Digital</div>
+              <div class="portfolio-desc">
+                Sistema completo de agendamentos com calendário visual.
+              </div>
+              <a
+                href="https://projeto-agenda-coral-gamma.vercel.app"
+                target="_blank"
+                rel="noopener"
+                class="btn-access"
+              >
+                Acessar
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M5 12h14" />
+                  <path d="M12 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="portfolio-card reveal reveal-delay-3">
+            <div class="portfolio-img">
+              <img
+                src="https://api.microlink.io/?url=https://weather-app-sable-five-31.vercel.app&screenshot=true&meta=false&embed=screenshot.url"
+                alt="Weather App"
+                loading="lazy"
+              />
+              <div class="portfolio-overlay">
+                <div class="overlay-icon">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#fff"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                    />
+                    <polyline points="15 3 21 3 21 9" />
+                    <line x1="10" y1="14" x2="21" y2="3" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="portfolio-info">
+              <span class="portfolio-tag">API / Clima</span>
+              <div class="portfolio-name">Weather App</div>
+              <div class="portfolio-desc">
+                Previsão do tempo com dados em tempo real e visual moderno.
+              </div>
+              <a
+                href="https://weather-app-sable-five-31.vercel.app"
+                target="_blank"
+                rel="noopener"
+                class="btn-access"
+              >
+                Acessar
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M5 12h14" />
+                  <path d="M12 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="portfolio-card reveal reveal-delay-4">
+            <div class="portfolio-img">
+              <img
+                src="https://api.microlink.io/?url=https://vitrine-carro.vercel.app&screenshot=true&meta=false&embed=screenshot.url"
+                alt="Vitrine de Carros"
+                loading="lazy"
+              />
+              <div class="portfolio-overlay">
+                <div class="overlay-icon">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#fff"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                    />
+                    <polyline points="15 3 21 3 21 9" />
+                    <line x1="10" y1="14" x2="21" y2="3" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="portfolio-info">
+              <span class="portfolio-tag">E-commerce</span>
+              <div class="portfolio-name">Vitrine de Carros</div>
+              <div class="portfolio-desc">
+                Catálogo automotivo com filtros e apresentação premium.
+              </div>
+              <a
+                href="https://vitrine-carro.vercel.app"
+                target="_blank"
+                rel="noopener"
+                class="btn-access"
+              >
+                Acessar
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M5 12h14" />
+                  <path d="M12 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="portfolio-card reveal reveal-delay-5">
+            <div class="portfolio-img">
+              <img
+                src="https://api.microlink.io/?url=https://emersonmrd.github.io/loja_feminina_on/&screenshot=true&meta=false&embed=screenshot.url"
+                alt="Loja Feminina"
+                loading="lazy"
+              />
+              <div class="portfolio-overlay">
+                <div class="overlay-icon">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#fff"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                    />
+                    <polyline points="15 3 21 3 21 9" />
+                    <line x1="10" y1="14" x2="21" y2="3" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="portfolio-info">
+              <span class="portfolio-tag">E-commerce</span>
+              <div class="portfolio-name">Loja Feminina</div>
+              <div class="portfolio-desc">
+                Loja online com experiência de compra elegante e responsiva.
+              </div>
+              <a
+                href="https://emersonmrd.github.io/loja_feminina_on/"
+                target="_blank"
+                rel="noopener"
+                class="btn-access"
+              >
+                Acessar
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M5 12h14" />
+                  <path d="M12 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CONTATO ===== -->
+    <section id="contato">
+      <div
+        class="section-inner"
+        style="padding-top: 80px; padding-bottom: 100px"
+      >
+        <div class="contato-card reveal">
+          <span class="section-tag">Vamos conversar</span>
+          <h2 class="section-title" style="margin-top: 0.5rem">
+            Pronto para transformar<br />sua tecnologia?
+          </h2>
+          <p>
+            Fale com nossa equipe e descubra como a SNS pode elevar sua operação
+            para o próximo nível.
+          </p>
+          <a
+            href="https://wa.me/553197480584?text=Ol%C3%A1%2C+vim+pelo+site+da+SNS+e+gostaria+de+mais+informa%C3%A7%C3%B5es."
+            target="_blank"
+            rel="noopener"
+            class="btn-whatsapp"
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="#fff"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"
+              />
+              <path
+                d="M12 0C5.373 0 0 5.373 0 12c0 2.124.558 4.118 1.529 5.845L.057 23.537a.5.5 0 0 0 .612.612l5.692-1.472A11.946 11.946 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.934 0-3.736-.528-5.279-1.443l-.378-.222-3.924 1.015 1.015-3.924-.222-.378A9.963 9.963 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"
+              />
+            </svg>
+            Falar com a SNS
+          </a>
+          <div class="contato-icons">
+            <!-- WhatsApp -->
+            <a
+              href="https://wa.me/553197480584"
+              target="_blank"
+              rel="noopener"
+              class="contato-icon-link"
+              aria-label="WhatsApp"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"
+                />
+                <path
+                  d="M12 0C5.373 0 0 5.373 0 12c0 2.124.558 4.118 1.529 5.845L.057 23.537a.5.5 0 0 0 .612.612l5.692-1.472A11.946 11.946 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.934 0-3.736-.528-5.279-1.443l-.378-.222-3.924 1.015 1.015-3.924-.222-.378A9.963 9.963 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"
+                />
+              </svg>
+            </a>
+            <!-- LinkedIn -->
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener"
+              class="contato-icon-link"
+              aria-label="LinkedIn"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== RODAPÉ ===== -->
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <a href="#hero" class="nav-logo">SNS</a>
+          <p class="footer-slogan">Tecnologia que move negócios</p>
+        </div>
+        <div>
+          <p class="footer-links-title">Navegação</p>
+          <ul class="footer-links">
+            <li><a href="#sobre">Sobre</a></li>
+            <li><a href="#servicos">Serviços</a></li>
+            <li><a href="#portfolio">Portfólio</a></li>
+            <li><a href="#contato">Contato</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-divider"></div>
+      <p class="footer-copy">© 2025 SNS — Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+      /* ===== CURSOR CUSTOMIZADO ===== */
+      const dot = document.getElementById("cursor-dot");
+      const ring = document.getElementById("cursor-ring");
+      let mx = 0,
+        my = 0,
+        rx = 0,
+        ry = 0;
+
+      document.addEventListener("mousemove", (e) => {
+        mx = e.clientX;
+        my = e.clientY;
+      });
+
+      function animateCursor() {
+        rx += (mx - rx) * 0.18;
+        ry += (my - ry) * 0.18;
+        dot.style.left = mx + "px";
+        dot.style.top = my + "px";
+        ring.style.left = rx + "px";
+        ring.style.top = ry + "px";
+        requestAnimationFrame(animateCursor);
+      }
+      animateCursor();
+
+      /* ===== PARTÍCULAS ===== */
+      (function () {
+        const canvas = document.getElementById("particles-canvas");
+        const ctx = canvas.getContext("2d");
+        let W, H, particles;
+
+        function resize() {
+          W = canvas.width = window.innerWidth;
+          H = canvas.height = window.innerHeight;
+        }
+
+        function Particle() {
+          this.x = Math.random() * W;
+          this.y = Math.random() * H;
+          this.r = Math.random() * 1.6 + 0.4;
+          this.vx = (Math.random() - 0.5) * 0.3;
+          this.vy = (Math.random() - 0.5) * 0.3;
+          this.a = Math.random() * 0.45 + 0.05;
+          this.color = Math.random() > 0.5 ? "#7b2fff" : "#e91e8c";
+        }
+
+        function init() {
+          resize();
+          particles = Array.from({ length: 90 }, () => new Particle());
+        }
+
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+          for (const p of particles) {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.a;
+            ctx.fill();
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < 0) p.x = W;
+            if (p.x > W) p.x = 0;
+            if (p.y < 0) p.y = H;
+            if (p.y > H) p.y = 0;
+          }
+          ctx.globalAlpha = 1;
+          requestAnimationFrame(draw);
+        }
+
+        window.addEventListener("resize", resize);
+        init();
+        draw();
+      })();
+
+      /* ===== NAVBAR HAMBURGER ===== */
+      const hamburger = document.getElementById("hamburger");
+      const navLinks = document.getElementById("nav-links");
+      hamburger.addEventListener("click", () => {
+        hamburger.classList.toggle("open");
+        navLinks.classList.toggle("open");
+      });
+      navLinks.querySelectorAll("a").forEach((a) => {
+        a.addEventListener("click", () => {
+          hamburger.classList.remove("open");
+          navLinks.classList.remove("open");
+        });
+      });
+
+      /* ===== INTERSECTION OBSERVER (animações de entrada) ===== */
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.classList.add("visible");
+                observer.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.12 },
+        );
+
+        document
+          .querySelectorAll(".reveal")
+          .forEach((el) => observer.observe(el));
+      } else {
+        document
+          .querySelectorAll(".reveal")
+          .forEach((el) => el.classList.add("visible"));
+      }
+
+      /* ===== SCROLL SUAVE LEGADO ===== */
+      document.querySelectorAll('a[href^="#"]').forEach((a) => {
+        a.addEventListener("click", (e) => {
+          const target = document.querySelector(a.getAttribute("href"));
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: "smooth" });
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
